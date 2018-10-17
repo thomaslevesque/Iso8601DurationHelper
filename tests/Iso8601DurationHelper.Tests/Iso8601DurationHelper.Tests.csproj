@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Iso8601Duration\Iso8601Duration.csproj" />
+    <ProjectReference Include="..\..\src\Iso8601DurationHelper\Iso8601DurationHelper.csproj" />
   </ItemGroup>
 
 </Project>

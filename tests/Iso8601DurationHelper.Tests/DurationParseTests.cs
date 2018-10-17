@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace Iso8601Duration.Tests
+namespace Iso8601DurationHelper.Tests
 {
     public class DurationParseTests
     {

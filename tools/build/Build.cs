@@ -43,9 +43,9 @@ namespace build
             string buildLogFile = Path.Combine(logsDir, "build.binlog");
             string packagesDir = Path.Combine(artifactsDir, "packages");
 
-            string solutionFile = "Iso8601Duration.sln";
-            string libraryProject = "src/Iso8601Duration/Iso8601Duration.csproj";
-            string testProject = "tests/Iso8601Duration.Tests/Iso8601Duration.Tests.csproj";
+            string solutionFile = "Iso8601DurationHelper.sln";
+            string libraryProject = "src/Iso8601DurationHelper/Iso8601DurationHelper.csproj";
+            string testProject = "tests/Iso8601DurationHelper.Tests/Iso8601DurationHelper.Tests.csproj";
 
             string version = GetVersion();
 

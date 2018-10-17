@@ -1,4 +1,4 @@
-# Iso8601Duration
+# Iso8601DurationHelper
 
 A small library to handle ISO8601 durations (e.g. `P1Y` for 1 year, `PT2H30M` for 2 hours and 30 minutes) in C#.
 

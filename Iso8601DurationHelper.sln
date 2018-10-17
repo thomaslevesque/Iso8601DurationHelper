@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iso8601Duration", "src\Iso8601Duration\Iso8601Duration.csproj", "{8BCE8BAB-D2C8-48C5-9412-8A944919CA7B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iso8601DurationHelper", "src\Iso8601DurationHelper\Iso8601DurationHelper.csproj", "{8BCE8BAB-D2C8-48C5-9412-8A944919CA7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iso8601Duration.Tests", "tests\Iso8601Duration.Tests\Iso8601Duration.Tests.csproj", "{79F5A911-E4B1-443D-B37C-A4F4BDDB57AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iso8601DurationHelper.Tests", "tests\Iso8601DurationHelper.Tests\Iso8601DurationHelper.Tests.csproj", "{79F5A911-E4B1-443D-B37C-A4F4BDDB57AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

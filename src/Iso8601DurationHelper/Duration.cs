@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Iso8601Duration
+namespace Iso8601DurationHelper
 {
     public struct Duration : IEquatable<Duration>
     {
