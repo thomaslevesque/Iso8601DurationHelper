@@ -296,5 +296,13 @@ namespace Iso8601DurationHelper
                 }
             }
         }
+
+        public static Duration FromYears(uint years) => new Duration(years, 0, 0, 0, 0, 0, 0);
+        public static Duration FromMonths(uint months) => new Duration(0, months, 0, 0, 0, 0, 0);
+        public static Duration FromWeeks(uint weeks) => new Duration(0, 0, weeks, 0, 0, 0, 0);
+        public static Duration FromDays(uint days) => new Duration(0, 0, 0, days, 0, 0, 0);
+        public static Duration FromHours(uint hours) => new Duration(0, 0, 0, 0, hours, 0, 0);
+        public static Duration FromMinutes(uint minutes) => new Duration(0, 0, 0, 0, 0, minutes, 0);
+        public static Duration FromSeconds(uint seconds) => new Duration(0, 0, 0, 0, 0, 0, seconds);
     }
 }
