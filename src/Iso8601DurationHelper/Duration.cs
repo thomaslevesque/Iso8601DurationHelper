@@ -125,6 +125,44 @@ namespace Iso8601DurationHelper
             return dateTime;
         }
 
+        public static DateTimeOffset operator+(DateTimeOffset dateTime, Duration duration)
+        {
+            if (duration.Years != 0)
+                dateTime = dateTime.AddYears((int)duration.Years);
+            if (duration.Months != 0)
+                dateTime = dateTime.AddMonths((int)duration.Months);
+            if (duration.Weeks != 0)
+                dateTime = dateTime.AddDays(7 * (int)duration.Weeks);
+            if (duration.Days != 0)
+                dateTime = dateTime.AddDays((int)duration.Days);
+            if (duration.Hours != 0)
+                dateTime = dateTime.AddHours((int)duration.Hours);
+            if (duration.Minutes != 0)
+                dateTime = dateTime.AddMinutes((int)duration.Minutes);
+            if (duration.Seconds != 0)
+                dateTime = dateTime.AddSeconds((int)duration.Seconds);
+            return dateTime;
+        }
+
+        public static DateTimeOffset operator-(DateTimeOffset dateTime, Duration duration)
+        {
+            if (duration.Years != 0)
+                dateTime = dateTime.AddYears(-(int)duration.Years);
+            if (duration.Months != 0)
+                dateTime = dateTime.AddMonths(-(int)duration.Months);
+            if (duration.Weeks != 0)
+                dateTime = dateTime.AddDays(-7 * (int)duration.Weeks);
+            if (duration.Days != 0)
+                dateTime = dateTime.AddDays(-(int)duration.Days);
+            if (duration.Hours != 0)
+                dateTime = dateTime.AddHours(-(int)duration.Hours);
+            if (duration.Minutes != 0)
+                dateTime = dateTime.AddMinutes(-(int)duration.Minutes);
+            if (duration.Seconds != 0)
+                dateTime = dateTime.AddSeconds(-(int)duration.Seconds);
+            return dateTime;
+        }
+
         public static Duration operator +(Duration duration1, Duration duration2)
         {
             return new Duration(
