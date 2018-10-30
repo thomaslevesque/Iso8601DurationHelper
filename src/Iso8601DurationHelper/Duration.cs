@@ -1,8 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Text;
 
 namespace Iso8601DurationHelper
 {
+    [TypeConverter(typeof(DurationConverter))]
     public struct Duration : IEquatable<Duration>
     {
         public Duration(uint years, uint months, uint weeks, uint days, uint hours, uint minutes, uint seconds)
