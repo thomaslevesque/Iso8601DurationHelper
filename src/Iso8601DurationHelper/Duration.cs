@@ -194,7 +194,7 @@ namespace Iso8601DurationHelper
                 throw new ArgumentNullException(nameof(input));
             if (input.Length < 3)
                 return false;
-            if (input[0] != 'P')
+            if (input[0] != DurationChars.Prefix)
                 return false;
 
             uint years = 0;
@@ -205,18 +205,18 @@ namespace Iso8601DurationHelper
             uint minutes = 0;
             uint seconds = 0;
 
-            int lastComponentNumber = -1;
+            var lastComponent = DurationComponent.None;
             int position = 1;
             int numberStart = -1;
-            bool isTime = false;
+            bool isTimeSpecified = false;
 
             while (position < input.Length)
             {
                 char c = input[position];
-                if (c == 'T')
+                if (c == DurationChars.Time)
                 {
-                    isTime = true;
-                    lastComponentNumber = 3; // day
+                    isTimeSpecified = true;
+                    lastComponent = DurationComponent.Time;
                 }
                 else if (char.IsLetter(c))
                 {
@@ -228,41 +228,41 @@ namespace Iso8601DurationHelper
                         return false; // Not a valid number
 
                     // Check component order
-                    int componentNumber = GetComponentNumber(c);
-                    if (componentNumber < 0)
+                    var component = GetComponent(c, isTimeSpecified);
+                    if (component == DurationComponent.None)
                         return false; // invalid character
-                    if (componentNumber >= 4 && !isTime)
+                    if (component > DurationComponent.Time && !isTimeSpecified)
                         return false; // Time component before the time specified
-                    if (componentNumber <= lastComponentNumber)
+                    if (component <= lastComponent)
                         return false; // Components in wrong order
 
-                    switch(c)
+                    switch(component)
                     {
-                        case 'Y':
+                        case DurationComponent.Years:
                             years = value;
                             break;
-                        case 'M' when !isTime:
+                        case DurationComponent.Months:
                             months = value;
                             break;
-                        case 'W':
+                        case DurationComponent.Weeks:
                             weeks = value;
                             break;
-                        case 'D':
+                        case DurationComponent.Days:
                             days = value;
                             break;
-                        case 'H':
+                        case DurationComponent.Hours:
                             hours = value;
                             break;
-                        case 'M' when isTime:
+                        case DurationComponent.Minutes:
                             minutes = value;
                             break;
-                        case 'S':
+                        case DurationComponent.Seconds:
                             seconds = value;
                             break;
                     }
 
                     numberStart = -1;
-                    lastComponentNumber = componentNumber;
+                    lastComponent = component;
                 }
                 else if (char.IsDigit(c))
                 {
@@ -273,28 +273,13 @@ namespace Iso8601DurationHelper
                 position++;
             }
 
-            if (lastComponentNumber < 0)
+            if (lastComponent == DurationComponent.None)
                 return false; // No component was specified
-            if (isTime && lastComponentNumber < 4)
-                return false; // We've seen the time specified, but no time component was specified
+            if (isTimeSpecified && lastComponent <= DurationComponent.Time)
+                return false; // We've seen the time specifier, but no time component was specified
 
             duration = new Duration(years, months, weeks, days, hours, minutes, seconds);
             return true;
-
-            int GetComponentNumber(char c)
-            {
-                switch (c)
-                {
-                    case 'Y': return 0;
-                    case 'M' when !isTime: return 1;
-                    case 'W': return 2;
-                    case 'D': return 3;
-                    case 'H': return 4;
-                    case 'M' when isTime: return 5;
-                    case 'S': return 6;
-                    default: return -1;
-                }
-            }
         }
 
         public static Duration FromYears(uint years) => new Duration(years, 0, 0, 0, 0, 0, 0);
@@ -304,5 +289,57 @@ namespace Iso8601DurationHelper
         public static Duration FromHours(uint hours) => new Duration(0, 0, 0, 0, hours, 0, 0);
         public static Duration FromMinutes(uint minutes) => new Duration(0, 0, 0, 0, 0, minutes, 0);
         public static Duration FromSeconds(uint seconds) => new Duration(0, 0, 0, 0, 0, 0, seconds);
+
+
+        private static DurationComponent GetComponent(char c, bool isTimeSpecified)
+        {
+            switch (c)
+            {
+                case DurationChars.Year:
+                    return DurationComponent.Years;
+                case DurationChars.Months when !isTimeSpecified:
+                    return DurationComponent.Months;
+                case DurationChars.Weeks:
+                    return DurationComponent.Weeks;
+                case DurationChars.Days:
+                    return DurationComponent.Days;
+                case DurationChars.Time when !isTimeSpecified:
+                    return DurationComponent.Time;
+                case DurationChars.Hours:
+                    return DurationComponent.Hours;
+                case DurationChars.Minutes when isTimeSpecified:
+                    return DurationComponent.Minutes;
+                case DurationChars.Seconds:
+                    return DurationComponent.Seconds;
+                default: return DurationComponent.None;
+            }
+        }
+
+        private static class DurationChars
+        {
+            public const char Prefix = 'P';
+            public const char Time = 'T';
+
+            public const char Year = 'Y';
+            public const char Months = 'M';
+            public const char Weeks = 'W';
+            public const char Days = 'D';
+            public const char Hours = 'H';
+            public const char Minutes = 'M';
+            public const char Seconds = 'S';
+        }
+
+        private enum DurationComponent
+        {
+            None = 0,
+            Years = None + 1,
+            Months = Years + 1,
+            Weeks = Months + 1,
+            Days = Weeks + 1,
+            Time = Days + 1,
+            Hours = Time + 1,
+            Minutes = Hours + 1,
+            Seconds = Minutes + 1
+        }
     }
 }
