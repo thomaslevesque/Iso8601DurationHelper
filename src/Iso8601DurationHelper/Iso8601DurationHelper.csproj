@@ -17,6 +17,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="MinVer" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
