@@ -33,7 +33,9 @@ namespace Iso8601DurationHelper.Tests
         [InlineData("PT1D")] // Date in time part
         [InlineData("P1M2Y")] // Components in wrong order
         [InlineData("PT1M2H")] // Components in wrong order
-        [InlineData("P1Z")] // Invalid character
+        [InlineData("P1Z")] // Invalid component
+        [InlineData("P1Y---2M")] // Invalid characters after component
+        [InlineData("P1Y2M+++")] // Trailing invalid characters
         public void Invalid_ISO8601_duration_throws_exception(string input)
         {
             Assert.Throws<FormatException>(() => Duration.Parse(input));

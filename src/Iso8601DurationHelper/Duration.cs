@@ -269,6 +269,11 @@ namespace Iso8601DurationHelper
                     if (numberStart < 0)
                         numberStart = position;
                 }
+                else
+                {
+                    // Invalid character
+                    return false;
+                }
 
                 position++;
             }
