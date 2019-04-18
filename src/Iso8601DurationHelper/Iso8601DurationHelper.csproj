@@ -9,7 +9,7 @@
     <Title>A small library to handle ISO8601 durations in C#.</Title>
     <Description>A small library to handle ISO8601 durations (e.g. P1Y for 1 year, PT2H30M for 2 hours and 30 minutes) in C#.</Description>
     <PackageTags>iso8601;duration;parse;timespan</PackageTags>
-    <PackageLicenseUrl>https://github.com/thomaslevesque/Iso8601DurationHelper/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
