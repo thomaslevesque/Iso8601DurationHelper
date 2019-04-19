@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Text;
 
@@ -191,7 +191,7 @@ namespace Iso8601DurationHelper
         {
             duration = default;
             if (input == null)
-                throw new ArgumentNullException(nameof(input));
+                return false;
             if (input.Length < 3)
                 return false;
             if (input[0] != DurationChars.Prefix)
