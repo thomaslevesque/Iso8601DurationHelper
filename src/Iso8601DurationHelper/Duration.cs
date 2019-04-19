@@ -1,12 +1,25 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Text;
 
 namespace Iso8601DurationHelper
 {
+    /// <summary>
+    /// Represents an ISO8601 duration expressed in number of years, months, weeks, days, hours, minutes and seconds.
+    /// </summary>
     [TypeConverter(typeof(DurationConverter))]
     public struct Duration : IEquatable<Duration>
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="Duration"/>.
+        /// </summary>
+        /// <param name="years">Number of years.</param>
+        /// <param name="months">Number of months.</param>
+        /// <param name="weeks">Number of weeks.</param>
+        /// <param name="days">Number of days.</param>
+        /// <param name="hours">Number of hours.</param>
+        /// <param name="minutes">Number of minutes.</param>
+        /// <param name="seconds">Number of seconds.</param>
         public Duration(uint years, uint months, uint weeks, uint days, uint hours, uint minutes, uint seconds)
         {
             Years = years;
@@ -18,18 +31,57 @@ namespace Iso8601DurationHelper
             Seconds = seconds;
         }
 
+        /// <summary>
+        /// The number of years in this <see cref="Duration"/>.
+        /// </summary>
         public uint Years { get; }
+
+        /// <summary>
+        /// The number of months in this <see cref="Duration"/>.
+        /// </summary>
         public uint Months { get; }
+
+        /// <summary>
+        /// The number of weeks in this <see cref="Duration"/>.
+        /// </summary>
         public uint Weeks { get; }
+
+        /// <summary>
+        /// The number of days in this <see cref="Duration"/>.
+        /// </summary>
         public uint Days { get; }
+
+        /// <summary>
+        /// The number of hours in this <see cref="Duration"/>.
+        /// </summary>
         public uint Hours { get; }
+
+        /// <summary>
+        /// The number of minutes in this <see cref="Duration"/>.
+        /// </summary>
         public uint Minutes { get; }
+
+        /// <summary>
+        /// The number of seconds in this <see cref="Duration"/>.
+        /// </summary>
         public uint Seconds { get; }
 
+        /// <summary>
+        /// Returns the zero <see cref="Duration"/>.
+        /// </summary>
         public static Duration Zero { get; } = new Duration(0, 0, 0, 0, 0, 0, 0);
 
-        public override bool Equals(object obj) => obj is Duration other && Equals(other);
+        /// <summary>
+        /// Returns a value indicating whether this instance is equal to a specified object.
+        /// </summary>
+        /// <param name="value">An object to compare with this instance.</param>
+        /// <returns><c>true</c> if <c>value</c> is a <see cref="Duration"/> object that represents the same duration as this instance, <c>false</c>.</returns>
+        public override bool Equals(object value) => value is Duration other && Equals(other);
 
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override int GetHashCode()
         {
             unchecked
@@ -46,6 +98,11 @@ namespace Iso8601DurationHelper
             }
         }
 
+        /// <summary>
+        /// Returns a value indicating whether this instance is equal to a specified object.
+        /// </summary>
+        /// <param name="other">An object to compare with this instance.</param>
+        /// <returns><c>true</c> if <c>other</c> represents the same duration as this instance; otherwise, <c>false</c>.</returns>
         public bool Equals(Duration other) =>
             Years == other.Years &&
             Months == other.Months &&
@@ -55,6 +112,10 @@ namespace Iso8601DurationHelper
             Minutes == other.Minutes &&
             Seconds == other.Seconds;
 
+        /// <summary>
+        /// Converts this <see cref="Duration"/> to its ISO8601 representation.
+        /// </summary>
+        /// <returns>The ISO8601 representation of this <see cref="Duration"/>.</returns>
         public override string ToString()
         {
             var sb = new StringBuilder("P");
@@ -87,6 +148,12 @@ namespace Iso8601DurationHelper
             }
         }
 
+        /// <summary>
+        /// Adds a <see cref="Duration"/> to a <see cref="DateTime"/>.
+        /// </summary>
+        /// <param name="dateTime">The <see cref="DateTime"/> to add the duration to.</param>
+        /// <param name="duration">The <see cref="Duration"/> to add.</param>
+        /// <returns>A new <see cref="DateTime"/> with is the result of the addition.</returns>
         public static DateTime operator+(DateTime dateTime, Duration duration)
         {
             if (duration.Years != 0)
@@ -106,6 +173,12 @@ namespace Iso8601DurationHelper
             return dateTime;
         }
 
+        /// <summary>
+        /// Subtracts a <see cref="Duration"/> from a <see cref="DateTime"/>.
+        /// </summary>
+        /// <param name="dateTime">The <see cref="DateTime"/> to subtract the duration from.</param>
+        /// <param name="duration">The <see cref="Duration"/> to subtract.</param>
+        /// <returns>A new <see cref="DateTime"/> with is the result of the subtraction.</returns>
         public static DateTime operator-(DateTime dateTime, Duration duration)
         {
             if (duration.Years != 0)
@@ -125,6 +198,12 @@ namespace Iso8601DurationHelper
             return dateTime;
         }
 
+        /// <summary>
+        /// Adds a <see cref="Duration"/> to a <see cref="DateTimeOffset"/>.
+        /// </summary>
+        /// <param name="dateTime">The <see cref="DateTimeOffset"/> to add the duration to.</param>
+        /// <param name="duration">The <see cref="Duration"/> to add.</param>
+        /// <returns>A new <see cref="DateTimeOffset"/> with is the result of the addition.</returns>
         public static DateTimeOffset operator+(DateTimeOffset dateTime, Duration duration)
         {
             if (duration.Years != 0)
@@ -144,6 +223,12 @@ namespace Iso8601DurationHelper
             return dateTime;
         }
 
+        /// <summary>
+        /// Subtracts a <see cref="Duration"/> from a <see cref="DateTimeOffset"/>.
+        /// </summary>
+        /// <param name="dateTime">The <see cref="DateTimeOffset"/> to subtract the duration from.</param>
+        /// <param name="duration">The <see cref="Duration"/> to subtract.</param>
+        /// <returns>A new <see cref="DateTimeOffset"/> with is the result of the subtraction.</returns>
         public static DateTimeOffset operator-(DateTimeOffset dateTime, Duration duration)
         {
             if (duration.Years != 0)
@@ -163,6 +248,12 @@ namespace Iso8601DurationHelper
             return dateTime;
         }
 
+        /// <summary>
+        /// Adds two instances of <see cref="Duration"/>.
+        /// </summary>
+        /// <param name="duration1">The first duration.</param>
+        /// <param name="duration2">The second duration.</param>
+        /// <returns>The sum of the two durations.</returns>
         public static Duration operator +(Duration duration1, Duration duration2)
         {
             return new Duration(
@@ -176,6 +267,13 @@ namespace Iso8601DurationHelper
             );
         }
 
+        /// <summary>
+        /// Converts the ISO8601 representation of a duration to a <see cref="Duration"/> instance.
+        /// </summary>
+        /// <param name="input">The ISO8601 representation of a duration.</param>
+        /// <returns>A <see cref="Duration"/> instance that corresponds to the ISO8601 duration.</returns>
+        /// <exception cref="ArgumentNullException"><c>input</c> is null.</exception>
+        /// <exception cref="FormatException"><c>input</c> has an invalid format.</exception>
         public static Duration Parse(string input)
         {
             if (input == null)
@@ -187,6 +285,12 @@ namespace Iso8601DurationHelper
             throw new FormatException("Invalid duration format");
         }
 
+        /// <summary>
+        /// Attempts to convert the ISO8601 representation of a duration to a <see cref="Duration"/> instance.
+        /// </summary>
+        /// <param name="input">The ISO8601 representation of a duration.</param>
+        /// <param name="duration">When this method returns, contains an instance of <see cref="Duration"/> equivalent to <c>input</c>, or <see cref="Zero"/> if the conversion failed. This parameter is passed uninitialized.</param>
+        /// <returns><c>true</c> if <c>input</c> was converted successfully; otherwise, <c>false</c>.</returns>
         public static bool TryParse(string input, out Duration duration)
         {
             duration = default;
@@ -222,7 +326,7 @@ namespace Iso8601DurationHelper
                 {
                     if (numberStart < 0 || numberStart >= position)
                         return false; // No number preceding letter
-                    
+
                     string numberString = input.Substring(numberStart, position - numberStart);
                     if (!uint.TryParse(numberString, out uint value))
                         return false; // Not a valid number
@@ -287,12 +391,53 @@ namespace Iso8601DurationHelper
             return true;
         }
 
+        /// <summary>
+        /// Creates an instance of <see cref="Duration"/> with the specified number of years.
+        /// </summary>
+        /// <param name="years">The number of years.</param>
+        /// <returns>An instance of <see cref="Duration"/> with the specified number of years.</returns>
         public static Duration FromYears(uint years) => new Duration(years, 0, 0, 0, 0, 0, 0);
+
+        /// <summary>
+        /// Creates an instance of <see cref="Duration"/> with the specified number of months.
+        /// </summary>
+        /// <param name="months">The number of months.</param>
+        /// <returns>An instance of <see cref="Duration"/> with the specified number of months.</returns>
         public static Duration FromMonths(uint months) => new Duration(0, months, 0, 0, 0, 0, 0);
+
+        /// <summary>
+        /// Creates an instance of <see cref="Duration"/> with the specified number of weeks.
+        /// </summary>
+        /// <param name="weeks">The number of weeks.</param>
+        /// <returns>An instance of <see cref="Duration"/> with the specified number of weeks.</returns>
         public static Duration FromWeeks(uint weeks) => new Duration(0, 0, weeks, 0, 0, 0, 0);
+
+        /// <summary>
+        /// Creates an instance of <see cref="Duration"/> with the specified number of days.
+        /// </summary>
+        /// <param name="days">The number of days.</param>
+        /// <returns>An instance of <see cref="Duration"/> with the specified number of days.</returns>
         public static Duration FromDays(uint days) => new Duration(0, 0, 0, days, 0, 0, 0);
+
+        /// <summary>
+        /// Creates an instance of <see cref="Duration"/> with the specified number of hours.
+        /// </summary>
+        /// <param name="hours">The number of hours.</param>
+        /// <returns>An instance of <see cref="Duration"/> with the specified number of hours.</returns>
         public static Duration FromHours(uint hours) => new Duration(0, 0, 0, 0, hours, 0, 0);
+
+        /// <summary>
+        /// Creates an instance of <see cref="Duration"/> with the specified number of minutes.
+        /// </summary>
+        /// <param name="minutes">The number of minutes.</param>
+        /// <returns>An instance of <see cref="Duration"/> with the specified number of minutes.</returns>
         public static Duration FromMinutes(uint minutes) => new Duration(0, 0, 0, 0, 0, minutes, 0);
+
+        /// <summary>
+        /// Creates an instance of <see cref="Duration"/> with the specified number of seconds.
+        /// </summary>
+        /// <param name="seconds">The number of seconds.</param>
+        /// <returns>An instance of <see cref="Duration"/> with the specified number of seconds.</returns>
         public static Duration FromSeconds(uint seconds) => new Duration(0, 0, 0, 0, 0, 0, seconds);
 
 
