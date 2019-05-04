@@ -1,5 +1,8 @@
 # Iso8601DurationHelper
 
+![NuGet version](https://img.shields.io/nuget/v/Iso8601DurationHelper.svg)
+![AppVeyor](https://img.shields.io/appveyor/ci/thomaslevesque/iso8601duration.svg)
+
 A small library to handle ISO8601 durations (e.g. `P1Y` for 1 year, `PT2H30M` for 2 hours and 30 minutes) in C#.
 
 Some libraries attempt to parse these durations to `TimeSpan`, but it doesn't really make sense, because `TimeSpan` doesn't have a concept of month, so they just translate `P1M` to 30 days. This is wrong because all months don't have the same number of days; January 1 + 1 month should be February 1, not January 31.
