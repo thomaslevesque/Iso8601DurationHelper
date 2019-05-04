@@ -1,7 +1,7 @@
 # Iso8601DurationHelper
 
-![NuGet version](https://img.shields.io/nuget/v/Iso8601DurationHelper.svg)
-![AppVeyor](https://img.shields.io/appveyor/ci/thomaslevesque/iso8601duration.svg)
+[![NuGet version](https://img.shields.io/nuget/v/Iso8601DurationHelper.svg)](https://www.nuget.org/packages/Iso8601DurationHelper)
+[![AppVeyor](https://img.shields.io/appveyor/ci/thomaslevesque/iso8601duration.svg)](https://ci.appveyor.com/project/thomaslevesque/iso8601duration)
 
 A small library to handle ISO8601 durations (e.g. `P1Y` for 1 year, `PT2H30M` for 2 hours and 30 minutes) in C#.
 
