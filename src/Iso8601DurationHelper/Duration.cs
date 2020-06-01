@@ -254,7 +254,7 @@ namespace Iso8601DurationHelper
         /// <param name="duration1">The first duration.</param>
         /// <param name="duration2">The second duration.</param>
         /// <returns>The sum of the two durations.</returns>
-        public static Duration operator +(Duration duration1, Duration duration2)
+        public static Duration operator+(Duration duration1, Duration duration2)
         {
             return new Duration(
                 duration1.Years + duration2.Years,
@@ -265,6 +265,28 @@ namespace Iso8601DurationHelper
                 duration1.Minutes + duration2.Minutes,
                 duration1.Seconds + duration2.Seconds
             );
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether two <see cref="Duration"/> instances are equal.
+        /// </summary>
+        /// <param name="duration1">The first duration.</param>
+        /// <param name="duration2">The second duration.</param>
+        /// <returns><c>true</c> if the arguments represents the same duration; otherwise, <c>false</c>.</returns>
+        public static bool operator==(Duration duration1, Duration duration2)
+        {
+            return duration1.Equals(duration2);
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether two <see cref="Duration"/> instances are different.
+        /// </summary>
+        /// <param name="duration1">The first duration.</param>
+        /// <param name="duration2">The second duration.</param>
+        /// <returns><c>true</c> if the arguments represent different durations; otherwise, <c>false</c>.</returns>
+        public static bool operator!=(Duration duration1, Duration duration2)
+        {
+            return !(duration1 == duration2);
         }
 
         /// <summary>
