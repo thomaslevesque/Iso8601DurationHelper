@@ -7,6 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iso8601DurationHelper", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iso8601DurationHelper.Tests", "tests\Iso8601DurationHelper.Tests\Iso8601DurationHelper.Tests.csproj", "{79F5A911-E4B1-443D-B37C-A4F4BDDB57AB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{51976466-BCE3-42CF-A2DF-4BDE4CC6EFDA}"
+ProjectSection(SolutionItems) = preProject
+	README.md = README.md
+	.gitignore = .gitignore
+	appveyor.yml = appveyor.yml
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
