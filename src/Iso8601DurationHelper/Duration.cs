@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Numerics;
 using System.Text;
 
 namespace Iso8601DurationHelper
@@ -8,7 +9,15 @@ namespace Iso8601DurationHelper
     /// Represents an ISO8601 duration expressed in number of years, months, weeks, days, hours, minutes and seconds.
     /// </summary>
     [TypeConverter(typeof(DurationConverter))]
-    public struct Duration : IEquatable<Duration>
+    public struct Duration :
+#if SUPPORTS_GENERIC_MATH
+        IParsable<Duration>,
+        IAdditionOperators<Duration, Duration, Duration>,
+        IAdditiveIdentity<Duration, Duration>,
+        IEqualityOperators<Duration, Duration, bool>
+#else
+        IEquatable<Duration>
+#endif
     {
         /// <summary>
         /// Initializes a new instance of <see cref="Duration"/>.
@@ -462,6 +471,31 @@ namespace Iso8601DurationHelper
         /// <returns>An instance of <see cref="Duration"/> with the specified number of seconds.</returns>
         public static Duration FromSeconds(uint seconds) => new Duration(0, 0, 0, 0, 0, 0, seconds);
 
+#if SUPPORTS_GENERIC_MATH
+        /// <summary>
+        /// Converts the ISO8601 representation of a duration to a <see cref="Duration"/> instance.
+        /// </summary>
+        /// <param name="s">The ISO8601 representation of a duration.</param>
+        /// <param name="provider">An object that provides culture-specific formatting information about <code>s</code>. This parameter is ignored.</param>
+        /// <returns>A <see cref="Duration"/> instance that corresponds to the ISO8601 duration.</returns>
+        /// <exception cref="ArgumentNullException"><c>input</c> is null.</exception>
+        /// <exception cref="FormatException"><c>input</c> has an invalid format.</exception>
+        static Duration IParsable<Duration>.Parse(string s, IFormatProvider provider) => Parse(s);
+
+        /// <summary>
+        /// Attempts to convert the ISO8601 representation of a duration to a <see cref="Duration"/> instance.
+        /// </summary>
+        /// <param name="s">The ISO8601 representation of a duration.</param>
+        /// <param name="provider">An object that provides culture-specific formatting information about <code>s</code>. This parameter is ignored.</param>
+        /// <param name="duration">When this method returns, contains an instance of <see cref="Duration"/> equivalent to <c>input</c>, or <see cref="Zero"/> if the conversion failed. This parameter is passed uninitialized.</param>
+        /// <returns><c>true</c> if <c>input</c> was converted successfully; otherwise, <c>false</c>.</returns>
+        static bool IParsable<Duration>.TryParse(string s, IFormatProvider provider, out Duration duration) => TryParse(s, out duration);
+
+        /// <summary>
+        /// Defines a mechanism for getting the additive identity of a given type.
+        /// </summary>
+        static Duration IAdditiveIdentity<Duration, Duration>.AdditiveIdentity => Zero;
+#endif
 
         private static DurationComponent GetComponent(char c, bool isTimeSpecified)
         {
