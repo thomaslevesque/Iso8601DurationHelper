@@ -11,7 +11,7 @@ namespace Iso8601DurationHelper
     /// Represents an ISO8601 duration expressed in number of years, months, weeks, days, hours, minutes and seconds.
     /// </summary>
     [TypeConverter(typeof(DurationConverter))]
-    public struct Duration :
+    public readonly struct Duration :
         IEquatable<Duration>
 #if SUPPORTS_GENERIC_MATH
         ,IParsable<Duration>
