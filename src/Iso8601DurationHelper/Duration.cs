@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+#if SUPPORTS_GENERIC_MATH
 using System.Numerics;
+#endif
 using System.Text;
 
 namespace Iso8601DurationHelper
@@ -10,13 +12,13 @@ namespace Iso8601DurationHelper
     /// </summary>
     [TypeConverter(typeof(DurationConverter))]
     public struct Duration :
-#if SUPPORTS_GENERIC_MATH
-        IParsable<Duration>,
-        IAdditionOperators<Duration, Duration, Duration>,
-        IAdditiveIdentity<Duration, Duration>,
-        IEqualityOperators<Duration, Duration, bool>
-#else
         IEquatable<Duration>
+#if SUPPORTS_GENERIC_MATH
+        ,IParsable<Duration>
+        ,ISpanParsable<Duration>
+        ,IAdditionOperators<Duration, Duration, Duration>
+        ,IAdditiveIdentity<Duration, Duration>
+        ,IEqualityOperators<Duration, Duration, bool>
 #endif
     {
         /// <summary>
@@ -298,6 +300,142 @@ namespace Iso8601DurationHelper
             return !(duration1 == duration2);
         }
 
+#if SUPPORTS_SPAN
+        /// <summary>
+        /// Converts the ISO8601 representation of a duration to a <see cref="Duration"/> instance.
+        /// </summary>
+        /// <param name="input">The ISO8601 representation of a duration.</param>
+        /// <returns>A <see cref="Duration"/> instance that corresponds to the ISO8601 duration.</returns>
+        /// <exception cref="ArgumentNullException"><c>input</c> is null.</exception>
+        /// <exception cref="FormatException"><c>input</c> has an invalid format.</exception>
+        public static Duration Parse(string input) => Parse((ReadOnlySpan<char>) input);
+
+        /// <summary>
+        /// Converts the ISO8601 representation of a duration to a <see cref="Duration"/> instance.
+        /// </summary>
+        /// <param name="input">The ISO8601 representation of a duration, as a <see cref="ReadOnlySpan{Char}"/>.</param>
+        /// <returns>A <see cref="Duration"/> instance that corresponds to the ISO8601 duration.</returns>
+        /// <exception cref="FormatException"><c>input</c> has an invalid format.</exception>
+        public static Duration Parse(ReadOnlySpan<char> input)
+        {
+            if (TryParse(input, out var duration))
+                return duration;
+
+            throw new FormatException("Invalid duration format");
+        }
+
+        /// <summary>
+        /// Attempts to convert the ISO8601 representation of a duration to a <see cref="Duration"/> instance.
+        /// </summary>
+        /// <param name="input">The ISO8601 representation of a duration.</param>
+        /// <param name="duration">When this method returns, contains an instance of <see cref="Duration"/> equivalent to <c>input</c>, or <see cref="Zero"/> if the conversion failed. This parameter is passed uninitialized.</param>
+        /// <returns><c>true</c> if <c>input</c> was converted successfully; otherwise, <c>false</c>.</returns>
+        public static bool TryParse(string input, out Duration duration) => TryParse((ReadOnlySpan<char>) input, out duration);
+
+        /// <summary>
+        /// Attempts to convert the ISO8601 representation of a duration to a <see cref="Duration"/> instance.
+        /// </summary>
+        /// <param name="input">The ISO8601 representation of a duration, as a <see cref="ReadOnlySpan{Char}"/>.</param>
+        /// <param name="duration">When this method returns, contains an instance of <see cref="Duration"/> equivalent to <c>input</c>, or <see cref="Zero"/> if the conversion failed. This parameter is passed uninitialized.</param>
+        /// <returns><c>true</c> if <c>input</c> was converted successfully; otherwise, <c>false</c>.</returns>
+        public static bool TryParse(ReadOnlySpan<char> input, out Duration duration)
+        {
+            duration = default;
+            if (input.Length < 3)
+                return false;
+            if (input[0] != DurationChars.Prefix)
+                return false;
+
+            uint years = 0;
+            uint months = 0;
+            uint weeks = 0;
+            uint days = 0;
+            uint hours = 0;
+            uint minutes = 0;
+            uint seconds = 0;
+
+            var lastComponent = DurationComponent.None;
+            int position = 1;
+            int numberStart = -1;
+            bool isTimeSpecified = false;
+
+            while (position < input.Length)
+            {
+                char c = input[position];
+                if (c == DurationChars.Time)
+                {
+                    isTimeSpecified = true;
+                    lastComponent = DurationComponent.Time;
+                }
+                else if (char.IsLetter(c))
+                {
+                    if (numberStart < 0 || numberStart >= position)
+                        return false; // No number preceding letter
+
+                    var numberSpan = input.Slice(numberStart, position - numberStart);
+                    if (!uint.TryParse(numberSpan, out uint value))
+                        return false; // Not a valid number
+
+                    // Check component order
+                    var component = GetComponent(c, isTimeSpecified);
+                    if (component == DurationComponent.None)
+                        return false; // invalid character
+                    if (component > DurationComponent.Time && !isTimeSpecified)
+                        return false; // Time component before the time specified
+                    if (component <= lastComponent)
+                        return false; // Components in wrong order
+
+                    switch(component)
+                    {
+                        case DurationComponent.Years:
+                            years = value;
+                            break;
+                        case DurationComponent.Months:
+                            months = value;
+                            break;
+                        case DurationComponent.Weeks:
+                            weeks = value;
+                            break;
+                        case DurationComponent.Days:
+                            days = value;
+                            break;
+                        case DurationComponent.Hours:
+                            hours = value;
+                            break;
+                        case DurationComponent.Minutes:
+                            minutes = value;
+                            break;
+                        case DurationComponent.Seconds:
+                            seconds = value;
+                            break;
+                    }
+
+                    numberStart = -1;
+                    lastComponent = component;
+                }
+                else if (char.IsDigit(c))
+                {
+                    if (numberStart < 0)
+                        numberStart = position;
+                }
+                else
+                {
+                    // Invalid character
+                    return false;
+                }
+
+                position++;
+            }
+
+            if (lastComponent == DurationComponent.None)
+                return false; // No component was specified
+            if (isTimeSpecified && lastComponent <= DurationComponent.Time)
+                return false; // We've seen the time specifier, but no time component was specified
+
+            duration = new Duration(years, months, weeks, days, hours, minutes, seconds);
+            return true;
+        }
+#else
         /// <summary>
         /// Converts the ISO8601 representation of a duration to a <see cref="Duration"/> instance.
         /// </summary>
@@ -421,6 +559,7 @@ namespace Iso8601DurationHelper
             duration = new Duration(years, months, weeks, days, hours, minutes, seconds);
             return true;
         }
+#endif
 
         /// <summary>
         /// Creates an instance of <see cref="Duration"/> with the specified number of years.
@@ -472,29 +611,20 @@ namespace Iso8601DurationHelper
         public static Duration FromSeconds(uint seconds) => new Duration(0, 0, 0, 0, 0, 0, seconds);
 
 #if SUPPORTS_GENERIC_MATH
-        /// <summary>
-        /// Converts the ISO8601 representation of a duration to a <see cref="Duration"/> instance.
-        /// </summary>
-        /// <param name="s">The ISO8601 representation of a duration.</param>
-        /// <param name="provider">An object that provides culture-specific formatting information about <code>s</code>. This parameter is ignored.</param>
-        /// <returns>A <see cref="Duration"/> instance that corresponds to the ISO8601 duration.</returns>
-        /// <exception cref="ArgumentNullException"><c>input</c> is null.</exception>
-        /// <exception cref="FormatException"><c>input</c> has an invalid format.</exception>
+        /// <inheritdoc />
         static Duration IParsable<Duration>.Parse(string s, IFormatProvider provider) => Parse(s);
 
-        /// <summary>
-        /// Attempts to convert the ISO8601 representation of a duration to a <see cref="Duration"/> instance.
-        /// </summary>
-        /// <param name="s">The ISO8601 representation of a duration.</param>
-        /// <param name="provider">An object that provides culture-specific formatting information about <code>s</code>. This parameter is ignored.</param>
-        /// <param name="duration">When this method returns, contains an instance of <see cref="Duration"/> equivalent to <c>input</c>, or <see cref="Zero"/> if the conversion failed. This parameter is passed uninitialized.</param>
-        /// <returns><c>true</c> if <c>input</c> was converted successfully; otherwise, <c>false</c>.</returns>
-        static bool IParsable<Duration>.TryParse(string s, IFormatProvider provider, out Duration duration) => TryParse(s, out duration);
+        /// <inheritdoc />
+        static bool IParsable<Duration>.TryParse(string s, IFormatProvider provider, out Duration result) => TryParse(s, out result);
 
-        /// <summary>
-        /// Defines a mechanism for getting the additive identity of a given type.
-        /// </summary>
+        /// <inheritdoc />
         static Duration IAdditiveIdentity<Duration, Duration>.AdditiveIdentity => Zero;
+
+        /// <inheritdoc />
+        static Duration ISpanParsable<Duration>.Parse(ReadOnlySpan<char> s, IFormatProvider provider) => Parse(s);
+
+        /// <inheritdoc />
+        static bool ISpanParsable<Duration>.TryParse(ReadOnlySpan<char> s, IFormatProvider provider, out Duration result) => TryParse(s, out result);
 #endif
 
         private static DurationComponent GetComponent(char c, bool isTimeSpecified)
