@@ -678,4 +678,32 @@ namespace Iso8601DurationHelper
             Seconds = Minutes + 1
         }
     }
+
+    /// <summary>
+    /// Extension class to add functionality to <see cref="DateTime"/> and <see cref="DateTimeOffset"/>
+    /// </summary>
+    public static class DateTimeHelper 
+    {
+        /// <summary>
+		  /// Adds a <see cref="Duration"/> value to a <see cref="DateTime"/> instant
+		  /// </summary>
+		  /// <param name="date">The date to add to</param>
+		  /// <param name="duration">The duration to add</param>
+		  /// <returns></returns>
+        public static DateTime Add(this DateTime date, Duration duration)
+        {
+            return date + duration;
+        }
+
+        /// <summary>
+        /// Adds a <see cref="Duration"/> value to a <see cref="DateTime"/> instant
+        /// </summary>
+        /// <param name="date">The date to add to</param>
+        /// <param name="duration">The duration to add</param>
+        /// <returns></returns>
+        public static DateTimeOffset Add(this DateTimeOffset date, Duration duration)
+        {
+            return date + duration;
+        }
+    }
 }
