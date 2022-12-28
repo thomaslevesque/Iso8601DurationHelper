@@ -682,25 +682,25 @@ namespace Iso8601DurationHelper
     /// <summary>
     /// Extension class to add functionality to <see cref="DateTime"/> and <see cref="DateTimeOffset"/> so that use of <see cref="Duration"/> is similar to using <see cref="TimeSpan"/>
     /// </summary>
-    public static class DateTimeHelper 
+    public static class DateTimeDurationExtensions 
     {
         /// <summary>
-        /// Adds a <see cref="Duration"/> value to a <see cref="DateTime"/> instant
+        /// Adds a <see cref="Duration"/> value to a <see cref="DateTime"/>
         /// </summary>
         /// <param name="date">The date to add to</param>
         /// <param name="duration">The duration to add</param>
-        /// <returns></returns>
+        /// <returns>An object whose value is the sum of the date and time represented by this instance and the interval represented by duration.</returns>
         public static DateTime Add(this DateTime date, Duration duration)
         {
             return date + duration;
         }
 
         /// <summary>
-        /// Adds a <see cref="Duration"/> value to a <see cref="DateTimeOffset"/> instant
+        /// Adds a <see cref="Duration"/> value to a <see cref="DateTimeOffset"/>
         /// </summary>
         /// <param name="date">The date to add to</param>
         /// <param name="duration">The duration to add</param>
-        /// <returns></returns>
+        /// <returns>An object whose value is the sum of the date and time represented by this instance and the interval represented by duration.</returns>
         public static DateTimeOffset Add(this DateTimeOffset date, Duration duration)
         {
             return date + duration;
