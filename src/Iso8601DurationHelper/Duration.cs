@@ -1,5 +1,9 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.ComponentModel;
+using System.Reflection;
+using System.Resources;
 #if SUPPORTS_GENERIC_MATH
 using System.Numerics;
 #endif
@@ -87,7 +91,7 @@ namespace Iso8601DurationHelper
         /// </summary>
         /// <param name="value">An object to compare with this instance.</param>
         /// <returns><c>true</c> if <c>value</c> is a <see cref="Duration"/> object that represents the same duration as this instance, <c>false</c>.</returns>
-        public override bool Equals(object value) => value is Duration other && Equals(other);
+        public override bool Equals(object? value) => value is Duration other && Equals(other);
 
         /// <summary>
         /// Returns the hash code for this instance.
@@ -158,8 +162,249 @@ namespace Iso8601DurationHelper
                     sb.Append(number).Append(symbol);
             }
         }
+        
+        public string ToDisplayString(bool outputNumericTime = true, bool outputDecimalValue = false, byte decimalPrecision = 2)
+        {
+            //get local copies of small, directly convertible values
+            var localSeconds = Seconds;
+            var localMinutes = Minutes;
+            var localHours = Hours;
+            var localDays = Days;
+            if (localSeconds >= 60)
+            {
+                localMinutes += localSeconds / 60;
+                localSeconds = localSeconds % 60;
+            }
+            if (localMinutes >= 60)
+            {
+                localHours += localMinutes / 60;
+                localMinutes = localMinutes % 60;
+            }
+            if (localHours >= 24)
+            {
+                localDays += localHours / 24;
+                localHours = localHours % 24;
+            }
 
-        /// <summary>
+            var sb = new StringBuilder();
+            var outputFirst = false;
+            var decimalFormat = outputDecimalValue ? "0." + new string('#', decimalPrecision) : null;
+            if (Years > 0)
+            {
+                if (outputDecimalValue)
+                {
+                    double value = Years;
+                    if (Months > 0)
+                    {
+                        value += Months / 12.0;
+                    }
+                    if (Weeks > 0)
+                    {
+                        value += Weeks / (365.0 / 7);
+                    }
+                    if (localDays > 0)
+                    {
+                        value += localDays / 365.0;
+                    }
+                    if (localHours > 0)
+                    {
+                        value += localHours / 24.0 / 365;
+                    }
+                    if (localMinutes > 0)
+                    {
+                        value += localMinutes / 60.0 / 24 / 365;
+                    }
+                    if (localSeconds > 0)
+                    {
+                        value += localSeconds / 60.0 / 60 / 24 / 365;
+                    }
+                    return value - 1 < (0.5 / (10 ^ decimalPrecision)) ? $"1 {Resources.Year}" : value.ToString(decimalFormat) + $" {Resources.Years}";
+                } 
+                sb.Append(Years);
+                sb.Append(' ');
+                sb.Append(Years == 1 ? Resources.Year : Resources.Years);
+                outputFirst = true;
+            }
+
+            if (Months > 0)
+            {
+                if (outputDecimalValue)
+                {
+                    double value = Months;
+                    if (Weeks > 0)
+                    {
+                        value += Weeks / (30.0 / 7);
+                    }
+                    if (localDays > 0)
+                    {
+                        value += localDays / 30.0;
+                    }
+                    if (localHours > 0)
+                    {
+                        value += localHours / 24.0 / 30;
+                    }
+                    if (localMinutes > 0)
+                    {
+                        value += localMinutes / 60.0 / 24;
+                    }
+                    if (localSeconds > 0)
+                    {
+                        value += localSeconds / 60.0 / 60 / 24;
+                    }
+                    return value - 1 < (0.5 / (10 ^ decimalPrecision)) ? $"1 {Resources.Month}" : value.ToString(decimalFormat) + $" {Resources.Months}";
+                }
+                if (outputFirst)
+                {
+                    sb.Append(", ");
+                }
+                else
+                {
+                    outputFirst = true;
+                }
+                sb.Append(Months);
+                sb.Append(' ');
+                sb.Append(Months == 1 ? Resources.Month : Resources.Months);
+            }
+
+            if (Weeks > 0)
+            {
+                if (outputDecimalValue)
+                {
+                    double value = Weeks;
+                    if (localDays > 0)
+                    {
+                        value += localDays / 7.0;
+                    }
+                    if (localHours > 0)
+                    {
+                        value += localHours / 24.0 / 7;
+                    }
+                    if (localMinutes > 0)
+                    {
+                        value += localMinutes / 60.0 / 24 / 7;
+                    }
+                    if (localSeconds > 0)
+                    {
+                        value += localSeconds / 60.0 / 60 / 24 / 7;
+                    }
+                    return value - 1 < (0.5 / (10 ^ decimalPrecision)) ? $"1 {Resources.Week}" : value.ToString(decimalFormat) + $" {Resources.Weeks}";
+                }
+                if (outputFirst)
+                {
+                    sb.Append(", ");
+                }
+                else
+                {
+                    outputFirst = true;
+                }
+                sb.Append(Weeks);
+                sb.Append(' ');
+                sb.Append(Weeks == 1 ? Resources.Week : Resources.Weeks);
+            }
+
+            if (localDays > 0)
+            {
+                if (outputDecimalValue)
+                {
+                    double value = localDays;
+                    if (localHours > 0)
+                    {
+                        value += localHours / 24.0;
+                    }
+                    if (localMinutes > 0)
+                    {
+                        value += localMinutes / 60.0 / 24;
+                    }
+                    if (localSeconds > 0)
+                    {
+                        value += localSeconds / 60.0 / 60 / 24;
+                    }
+                    return value - 1 < (0.5 / (10 ^ decimalPrecision)) ? $"1 {Resources.Day}" : value.ToString(decimalFormat) + $" {Resources.Days}";
+                }
+                if (outputFirst)
+                {
+                    sb.Append(", ");
+                }
+                else
+                {
+                    outputFirst = true;
+                }
+                sb.Append(localDays);
+                sb.Append(' ');
+                sb.Append(localDays == 1 ? Resources.Day : Resources.Days);
+            }
+
+            if (outputNumericTime && !outputFirst && (localHours > 0 || localMinutes > 0 || localSeconds > 0))
+            {
+                return $"{localHours}:{localMinutes:D2}:{localSeconds:D2}";
+            }
+
+            if (localHours > 0)
+            {
+                if (outputDecimalValue)
+                {
+                    double value = localHours;
+                    if (localMinutes > 0)
+                    {
+                        value += localMinutes / 60.0;
+                    }
+                    if (localSeconds > 0)
+                    {
+                        value += localSeconds / 60.0 / 60;
+                    }
+                    return value - 1 < (0.5 * (10 ^ decimalPrecision)) ? $"1 {Resources.Hour}" : value.ToString(decimalFormat) + $" {Resources.Hours}";
+                }
+                if (outputFirst)
+                {
+                    sb.Append(", ");
+                }
+                else
+                {
+                    outputFirst = true; 
+                }
+                sb.Append(localHours);
+                sb.Append(' ');
+                sb.Append(localHours == 1 ? Resources.Hour : Resources.Hours);
+            }
+
+            if (localMinutes > 0)
+            {
+                if (outputDecimalValue)
+                {
+                    double value = localMinutes;
+                    if (localSeconds > 0)
+                    {
+                        value += localSeconds / 60.0;
+                    }
+                    return value - 1 < (0.5 * (10 ^ decimalPrecision)) ? $"1 {Resources.Minute}" : value.ToString(decimalFormat) + $" {Resources.Minutes}";
+                }
+                if (outputFirst)
+                {
+                    sb.Append(", ");
+                }
+                else
+                {
+                    outputFirst = true;
+                }
+                sb.Append(localMinutes);
+                sb.Append(' ');
+                sb.Append(localMinutes == 1 ? Resources.Minute : Resources.Minutes);
+            }
+
+            if (localSeconds > 0 || sb.Length == 0)
+            {
+                if (outputFirst)
+                {
+                    sb.Append(", ");
+                }
+                sb.Append(localSeconds);
+                sb.Append(' ');
+                sb.Append(localSeconds == 1 ? Resources.Second : Resources.Seconds);
+            }
+            return sb.ToString();
+        }
+
+			/// <summary>
         /// Adds a <see cref="Duration"/> to a <see cref="DateTime"/>.
         /// </summary>
         /// <param name="dateTime">The <see cref="DateTime"/> to add the duration to.</param>
